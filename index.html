@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone OTP Verification</title>
+    <!-- Load Firebase App and Authentication SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <style>
+        /* Optional: Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #message {
+            margin-top: 10px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h2>Phone OTP Verification</h2>
+    <form id="otpForm">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" placeholder="+1234567890" required>
+        <button type="button" onclick="sendOTP()">Send OTP</button>
+        <div id="recaptcha-container"></div>
+
+        <br><br>
+        <label for="otp">Enter OTP:</label>
+        <input type="text" id="otp" name="otp" required>
+        <button type="button" onclick="verifyOTP()">Verify OTP</button>
+    </form>
+    <div id="message"></div>
+
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGeUTTmsYHIxzPg4wHydDG0JJW0MFRDvs",
+            authDomain: "dandikamarathon-1234.firebaseapp.com",
+            projectId: "dandikamarathon-1234",
+            storageBucket: "dandikamarathon-1234.appspot.com",
+            messagingSenderId: "20480062084",
+            appId: "1:20480062084:web:1a3c3bbabddd5f77dd08d1"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+
+        // Initialize ReCAPTCHA verifier
+        const appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+
+        // Function to send OTP
+        function sendOTP() {
+            const phoneNumber = document.getElementById("phone").value;
+            firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+                .then((confirmationResult) => {
+                    window.confirmationResult = confirmationResult;
+                    document.getElementById("message").innerHTML = "OTP sent!";
+                }).catch((error) => {
+                    document.getElementById("message").innerHTML = `Error: ${error.message}`;
+                });
+        }
+
+        // Function to verify OTP
+        function verifyOTP() {
+            const otp = document.getElementById("otp").value;
+            window.confirmationResult.confirm(otp).then((result) => {
+                const user = result.user;
+                document.getElementById("message").innerHTML = "Phone number verified!";
+            }).catch((error) => {
+                document.getElementById("message").innerHTML = `Error: ${error.message}`;
+            });
+        }
+    </script>
+</body>
+</html>
